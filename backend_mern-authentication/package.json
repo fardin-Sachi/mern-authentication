@@ -1,0 +1,15 @@
+{
+  "name": "backend_mern-authentication",
+  "version": "1.0.0",
+  "description": "An experiment on learning MERN Authentication flow",
+  "keywords": [
+    "mern-authentication"
+  ],
+  "license": "ISC",
+  "author": "Fardin Ahsan",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
