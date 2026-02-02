@@ -1,8 +1,52 @@
-#Environmental variables
-.env.local
-.env.production
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
 
-node_modules
+# =========================
+# Dependencies
+# =========================
+node_modules/
+
+# =========================
+# Build output
+# =========================
+dist/
+dist-ssr/
+build/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =========================
+# JetBrains / WebStorm
+# =========================
+.idea/
+*.iws
+out/
+.idea_modules/
+
+# =========================
+# OS / Editor junk
+# =========================
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 ### JetBrains ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
