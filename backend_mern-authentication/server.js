@@ -4,8 +4,11 @@ import connectDb from './src/lib/db.js';
 import routes from './src/routes/index.js';
 import logger from './src/middlewares/logger.middleware.js';
 import errorHandler from './src/middlewares/errorHandler.middleware.js';
+import connectRedis from './src/lib/redis.js';
 
 await connectDb();
+await connectRedis();
+
 const app = express();
 
 app.use(express.json());
@@ -16,10 +19,10 @@ app.use(express.json());
 app.use(logger);
 
 // Routes
-app.use("/", (req,res)=> {
+app.use("/api/v1", routes);
+app.use("/health", (req,res)=> {
     res.send("Hey there");
 })
-app.use("/api/v1", routes);
 app.use(errorHandler);
 
 
