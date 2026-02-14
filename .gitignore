@@ -9,13 +9,21 @@
 # Dependencies
 # =========================
 node_modules/
+.pnp
+.pnp.js
 
 # =========================
 # Build output
 # =========================
 dist/
 dist-ssr/
+*.local
 build/
+coverage/
+.next/
+out/
+.tmp/
+.temp/
 
 # =========================
 # Logs
@@ -29,6 +37,22 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # =========================
+# Docker
+# =========================
+docker-compose.override.yml
+*.pid
+*.seed
+*.pid.lock
+
+# =========================
+# Cache / Misc
+# =========================
+.cache/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+
+# =========================
 # JetBrains / WebStorm
 # =========================
 .idea/
@@ -40,6 +64,7 @@ out/
 # OS / Editor junk
 # =========================
 .DS_Store
+Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 *.suo
@@ -105,10 +130,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-dist
-dist-ssr
-*.local
 
 # Editor directories and files
 .vscode/*

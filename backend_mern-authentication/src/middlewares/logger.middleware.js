@@ -1,8 +1,8 @@
-const traceRequests = (req, res, next) => {
+const logger = (req, res, next) => {
     const timestamp = new Date().toISOString();
 
     console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
     next();
 };
 
-export default traceRequests;
+export default logger;
