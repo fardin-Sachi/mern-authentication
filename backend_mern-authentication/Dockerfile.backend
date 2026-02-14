@@ -1,0 +1,29 @@
+### Development stage
+FROM node:25-alpine as dev
+
+WORKDIR /app
+
+COPY /backend_mern-authentication/package.json backend_mern-authentication/package-lock.json ./
+RUN npm install
+
+COPY backend_mern-authentication/ .
+
+EXPOSE 8000
+
+CMD [ "npx", "nodemon", "--legacy-watch", "server.js" ]
+
+
+
+### Production stage
+FROM node:25-alpine as prod
+
+WORKDIR /app
+
+COPY /backend_mern-authentication/package.json /backend_mern-authentication/package-lock.json ./
+RUN npm install --production
+
+COPY backend_mern-authentication/ .
+
+EXPOSE 8000
+
+CMD [ "node", "server.js" ]

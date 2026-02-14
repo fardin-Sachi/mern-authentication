@@ -1,0 +1,39 @@
+### Development stage
+FROM node:25-alpine as dev
+
+WORKDIR /app
+
+COPY frontend_mern-authentication/package.json frontend_mern-authentication/package-lock.json ./
+RUN npm install
+
+COPY frontend_mern-authentication/ .
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host"]
+
+
+
+### Build Stage
+FROM node:25-alpine as build
+
+WORKDIR /app
+
+COPY frontend_mern-authentication/package*.json ./
+RUN npm install
+
+COPY frontend_mern-authentication/ .
+
+EXPOSE 5173
+
+RUN npm run build
+
+
+
+
+### Production Stage
+FROM nginx:alpine as prod
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+CMD ["nginx", "-g", "daemon off;"]
