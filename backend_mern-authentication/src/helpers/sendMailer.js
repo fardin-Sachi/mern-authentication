@@ -15,7 +15,7 @@ const sendMail = async({email, subject, html}) => {
                 pass: SMTP_PASSWORD
             },
             tls: {
-                rejectUnauthorized: false // Avoid Docker TLS issues
+                rejectUnauthorized: false
             }
         });
 
@@ -24,8 +24,7 @@ const sendMail = async({email, subject, html}) => {
             to: email,
             subject,
             html
-        })
-        console.log("asd");    
+        })   
     } catch (error) {
         console.error("Failed to send email:", error.message);
     }

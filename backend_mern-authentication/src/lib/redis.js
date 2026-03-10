@@ -1,17 +1,15 @@
 import {createClient} from 'redis';
 import { REDIS_URL } from '../config/env.config.js';
 
-let redisClient;
+const redisClient = createClient({
+  url: REDIS_URL
+})
 
 const connectRedis = async() => {
     try {
         if(!REDIS_URL){
             throw new Error("REDIS_URL not found!");
         }
-
-        redisClient = createClient({
-            url: REDIS_URL
-        });
 
         redisClient.on("error", (err) => {
             console.error("Redis Client Error:", err);
@@ -27,5 +25,4 @@ const connectRedis = async() => {
     }
 }
 
-export {redisClient};
-export default connectRedis;
+export {redisClient, connectRedis};
