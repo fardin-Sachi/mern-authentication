@@ -6,7 +6,7 @@ export const generateToken = async (id, res) => {
     const accessToken = jwt.sign(
         {id},
         JWT_SECRET,
-        {expiresIn: "15m"}
+        {expiresIn: "1m"}
     );
 
     const refreshToken = jwt.sign(
@@ -21,14 +21,14 @@ export const generateToken = async (id, res) => {
     res.cookie("accessToken", accessToken,{
         httpOnly: true,
         secure: NODE_ENV==="production",
-        sameSite: "none",
-        maxAge: 15 * 60 * 1000
+        sameSite: "lax",
+        maxAge: 1 * 60 * 1000
     });
 
     res.cookie("refreshToken", refreshToken,{
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: NODE_ENV==="production",
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000
     });
 

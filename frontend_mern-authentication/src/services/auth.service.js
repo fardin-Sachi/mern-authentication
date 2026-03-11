@@ -1,4 +1,5 @@
 import apiClient from "./api.service";
+import "./api.interceptor"
 
 const baseUrl = "/users";
 
@@ -58,7 +59,7 @@ class AuthService {
       return response.data;
     }
 
-    async logout() {
+    async logoutUser() {
       try {
         const response = await apiClient.post(`${baseUrl}/logout`);
         return response.data;

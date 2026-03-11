@@ -1,29 +1,52 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import VerifyOtpPage from './pages/VerifyOtpPage';
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import VerifyOtpPage from "./pages/VerifyOtpPage";
+import { AppData } from "./contexts/AppContext";
+import LoaderComponent from "./components/LoaderComponent";
 
 function App() {
+  const { isAuth, loading, userEmail } = AppData();
+
   return (
     <>
-      <BrowserRouter>
-        <Routes>
+      {loading ? (
+        <LoaderComponent />
+      ) : (
+        <BrowserRouter>
+          <Routes>
 
-          <Route path="/" element={<HomePage />} />
+            <Route
+              path="/"
+              element={
+                isAuth ? <HomePage /> : <Navigate to="/login" />
+              }
+            />
 
-          <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/login"
+              element={
+                !isAuth ? <LoginPage /> : <Navigate to="/" />
+              }
+            />
 
-          <Route path="/verify-otp" element={<VerifyOtpPage />} />
+            <Route
+              path="/verify-otp"
+              element={
+                !isAuth && userEmail ? <VerifyOtpPage /> : <Navigate to="/" />
+              }
+            />
+            
+          </Routes>
+        </BrowserRouter>
+      )}
 
-        </Routes>
-      </BrowserRouter>
-
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000} 
-        newestOnTop={true} 
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        newestOnTop={true}
         pauseOnHover
         closeOnClick
       />
@@ -31,4 +54,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

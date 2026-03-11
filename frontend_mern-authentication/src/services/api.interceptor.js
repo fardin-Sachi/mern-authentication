@@ -1,3 +1,4 @@
+import { AppData } from "../contexts/AppContext";
 import apiClient from "./api.service";
 import authService from "./auth.service";
 
@@ -23,7 +24,12 @@ apiClient.interceptors.response.use(
     async (error)=> {
         const originalRequest = error.config;
 
-        if(error.response?.status === 403 && !originalRequest._retry){
+        if(error.response?.status === 403 && !originalRequest._retry && !originalRequest.url.includes("/refresh-token")){
+            const { isAuth } = AppData();
+
+            /// If user is not logged in, do not attempt refresh
+            if (!isAuth) return Promise.reject(error);
+
             if(isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({resolve, reject});
@@ -41,6 +47,7 @@ apiClient.interceptors.response.use(
                 return apiClient(originalRequest);
             } catch (error) {
                 processQueue(error, null);
+
                 return Promise.reject(error);
             } finally {
                 isRefreshing = false;
