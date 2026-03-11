@@ -181,7 +181,7 @@ export const loginUser = TryCatch(async (req, res) => {
     if(!user){
         return res.status(400).json({
             success: false,
-            message: "Invalid email or password"
+            message: "User not found"
         });
     }
 
@@ -193,7 +193,7 @@ export const loginUser = TryCatch(async (req, res) => {
         });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 90000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     const otpKey = `otp:${email}`;
     await redisClient.set(otpKey, JSON.stringify(otp), {EX: 300});
