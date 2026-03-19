@@ -4,9 +4,12 @@ import authService from "../services/auth.service";
 import {toast} from 'react-toastify'
 import { useNavigate } from "react-router-dom";
 import {LOCAL_STORAGE} from "../constants/localStorage.constant";
+import { AppData } from "../contexts/AppContext";
 
 function LoginPage() {
     const navigate = useNavigate();
+    const { setUserEmail } = AppData();
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -30,7 +33,8 @@ function LoginPage() {
             const data = await authService.login(formData);
             if(data.success){
                 toast.success(data.message);
-                localStorage.setItem(`${LOCAL_STORAGE.baseName}:email`, JSON.stringify(formData.email));
+                localStorage.setItem(`${LOCAL_STORAGE.baseName}:email`, formData.email);
+                setUserEmail(formData.email);
                 navigate("/verify-otp");
             }
             else toast.error(data.message);

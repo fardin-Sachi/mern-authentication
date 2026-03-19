@@ -6,9 +6,11 @@ import {
     verifyOtp, 
     verifyUser,
     refreshToken,
-    logoutUser
+    logoutUser,
+    refreshCsrfToken
 } from "../controllers/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { verifyCsrfToken } from "../middlewares/csrf.middleware.js";
 
 const router = express.Router();
 
@@ -23,7 +25,9 @@ router.get("/me", authMiddleware, myProfile);
 
 router.post("/refresh-token", refreshToken);
 
-router.post("/logout", authMiddleware, logoutUser);
+router.post("/refresh-csrf", authMiddleware, refreshCsrfToken)
+
+router.post("/logout", authMiddleware, verifyCsrfToken, logoutUser);
 
 router.post("/", registerUser);
 

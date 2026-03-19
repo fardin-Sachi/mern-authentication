@@ -16,10 +16,11 @@ export const AppProvider = ({children}) => {
      *  should not be able to go to the OTP verification 
      *  page
     */
-    const userEmail = localStorage.getItem(`${LOCAL_STORAGE.baseName}:email`) || "";
+    const [userEmail, setUserEmail] = useState(
+        localStorage.getItem(`${LOCAL_STORAGE.baseName}:email`) || ""
+    );
 
     async function fetchUser() {
-        
         setLoading(true);
         try {
             const data = await userService.fetchUser();
@@ -34,18 +35,20 @@ export const AppProvider = ({children}) => {
         }
     }
     
-    async function logoutUser() {
-        if(!isAuth || !user) return;
+    async function logoutUser(navigate) {
+        
         try {
             const data = await userService.logoutUser();
             toast.success(data.message);
-            setIsAuth(false);
-            setUser(null);
-
-            //In case there is email data
-            localStorage.removeItem(`${LOCAL_STORAGE.baseName}:email`);
+            navigate("/login");
         } catch (error) {
             toast.error(error?.message || "Logout failed");
+        } finally {
+            setIsAuth(false);
+            setUser(null);
+            
+            //In case there is email data
+            localStorage.removeItem(`${LOCAL_STORAGE.baseName}:email`);
         }
     }
 
@@ -55,7 +58,16 @@ export const AppProvider = ({children}) => {
 
     return (
         <AppContext.Provider 
-            value={{ setIsAuth, isAuth, setUser, user, loading, logoutUser, userEmail }}
+            value={{ 
+                setIsAuth, 
+                isAuth, 
+                setUser, 
+                user, 
+                loading, 
+                logoutUser, 
+                userEmail, 
+                setUserEmail
+            }}
             >
             {children}
         </AppContext.Provider>

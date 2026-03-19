@@ -70,7 +70,7 @@ services:
 
   mongo:
     image: mongo:7.0
-    container_name: mern-mongo
+    container_name: mern-authentication-mongo
     ports:
       - "27017:27017"
     env_file:
@@ -81,7 +81,7 @@ services:
 
   redis:
     image: redis:8.6.1-alpine
-    container_name: mern-redis
+    container_name: mern-authentication-redis
     ports:
       - "6379:6379"
     command: redis-server --appendonly yes

@@ -59,6 +59,17 @@ class AuthService {
       return response.data;
     }
 
+    async refreshCsrfToken(){
+      const response = await apiClient.post(
+        `${baseUrl}/refresh-csrf`, 
+        {},
+        {
+          withCredentials: true
+        }
+      )
+      return response.data;
+    }
+
     async logoutUser() {
       try {
         const response = await apiClient.post(`${baseUrl}/logout`);

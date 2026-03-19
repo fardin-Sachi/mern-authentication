@@ -4,12 +4,16 @@ import authService from "../services/auth.service";
 import {toast} from 'react-toastify'
 import { useNavigate } from "react-router-dom";
 import { LOCAL_STORAGE } from "../constants/localStorage.constant";
+import userService from "../services/user.service";
+import { AppData } from "../contexts/AppContext";
 
 function VerifyOtpPage() {
     const navigate = useNavigate();
+    const { setUser, setIsAuth } = AppData();
+
     const [formData, setFormData] = useState({
         otp: "",
-        email: JSON.parse(localStorage.getItem(`${LOCAL_STORAGE.baseName}:email`)) || ""
+        email: localStorage.getItem(`${LOCAL_STORAGE.baseName}:email`) || ""
     });
     const [btnLoading, setBtnLoading] = useState(false);
 
@@ -34,7 +38,14 @@ function VerifyOtpPage() {
             const data = await authService.verifyLoginOtp(formData);
             if(data.success){
                 toast.success(data.message);
+
+                const userData = await userService.fetchUser();
+
+                setUser(userData);
+                setIsAuth(true);
+
                 localStorage.removeItem(`${LOCAL_STORAGE.baseName}:email`);
+
                 navigate("/");
             }
             else toast.error(data.message);
@@ -88,4 +99,4 @@ function VerifyOtpPage() {
   )
 }
 
-export default VerifyOtpPage
+export default VerifyOtpPage;
