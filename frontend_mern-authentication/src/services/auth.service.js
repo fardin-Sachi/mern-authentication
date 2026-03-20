@@ -48,6 +48,17 @@ class AuthService {
       }
     }
 
+    async verifyEmail(token) {
+      try {
+        const response = await apiClient.get(
+          `${baseUrl}/verify-email/${token}`
+        );
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || "Email verification failed";
+      }
+    }
+
     async refreshToken(){
       const response = await apiClient.post(
         `${baseUrl}/refresh-token`, 

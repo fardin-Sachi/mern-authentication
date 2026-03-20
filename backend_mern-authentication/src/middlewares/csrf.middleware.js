@@ -1,5 +1,4 @@
 import { redisClient } from '../lib/redis.js';
-import { generateCsrfToken, revokeCsrfToken } from '../helpers/generateCsrfToken.js';
 
 export const verifyCsrfToken = async (req, res, next) => {
     try {
