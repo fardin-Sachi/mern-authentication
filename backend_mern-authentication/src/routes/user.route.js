@@ -7,7 +7,8 @@ import {
     verifyUser,
     refreshToken,
     logoutUser,
-    refreshCsrfToken
+    refreshCsrfToken,
+    adminController
 } from "../controllers/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { verifyCsrfToken } from "../middlewares/csrf.middleware.js";
@@ -30,5 +31,7 @@ router.post("/refresh-csrf", authMiddleware, refreshCsrfToken)
 router.post("/logout", authMiddleware, verifyCsrfToken, logoutUser);
 
 router.post("/", registerUser);
+
+router.get("/admin", authMiddleware, adminController);
 
 export default router;

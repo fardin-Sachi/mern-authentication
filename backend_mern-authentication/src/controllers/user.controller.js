@@ -350,3 +350,10 @@ export const refreshCsrfToken = TryCatch(async (req, res) => {
         csrfToken: newCsrfToken
     })
 })
+
+export const adminController = TryCatch(async (req, res) => {
+    res.json({
+        success: true,
+        message: "Hello Admin!"
+    })
+})

@@ -24,6 +24,16 @@ class UserService {
         throw error.response?.data?.message || "User not found";
       }
     }
+
+    async fetchAdminData() {
+      try {
+        const response = await apiClient.get(`${baseUrl}/admin`);
+
+        return response.data;
+      } catch (error) {
+        throw error.response?.data?.message || "Admin data not found";
+      }
+    }
 }
 
 export default new UserService();

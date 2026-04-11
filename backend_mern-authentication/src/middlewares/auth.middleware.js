@@ -46,7 +46,7 @@ export const authMiddleware = async (req, res, next) => {
     ) {
       return res.status(403).json({
         success: false,
-        message: "Invalid token 2",
+        message: "Invalid token",
       });
     }
 
@@ -58,3 +58,15 @@ export const authMiddleware = async (req, res, next) => {
     });
   }
 };
+
+export const authorizedAdmin = async (req, res, next) => {
+  const user = req.user;
+  if(user.role !== 'admin') {
+    return res.status(401).json({
+      success: false,
+      message: "You are not allowed for this activity"
+    })
+  }
+
+  next();
+}

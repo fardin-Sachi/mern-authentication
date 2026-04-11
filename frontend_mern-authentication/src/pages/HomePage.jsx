@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppData } from "../contexts/AppContext";
 
 function HomePage() {
-    const {logoutUser} = AppData();
+    const {logoutUser, user} = AppData();
     const navigate = useNavigate();
 
   return (
@@ -15,6 +15,16 @@ function HomePage() {
           >
           Logout
         </button>
+
+        {
+          user && user.role === "admin" && (
+            <Link to="/dashboard"
+              className="bg-purple-500 text-white p-2 rounded-md"
+            >
+          Dashboard
+        </Link>
+          )
+        }
       </div>
       
     </>

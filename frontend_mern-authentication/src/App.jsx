@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyOtpPage from "./pages/VerifyOtpPage";
@@ -52,6 +53,13 @@ function App() {
               path="/token/:token"
               element={
                 !isAuth ? <VerifyEmailPage /> : <Navigate to="/" />
+              }
+            />
+
+            <Route
+              path="/dashboard"
+              element={
+                isAuth ? <DashboardPage /> : <LoginPage />
               }
             />
             
