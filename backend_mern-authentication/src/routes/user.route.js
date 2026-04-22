@@ -1,8 +1,64 @@
 import express from "express";
-import {registerUser} from "../controllers/user.controller.js";
+import {
+    loginUser,
+    myProfile,
+    registerUser, 
+    verifyOtp, 
+    verifyUser,
+    refreshToken,
+    logoutUser,
+    refreshCsrfToken,
+    adminController
+} from "../controllers/user.controller.js";
+import { 
+    authMiddleware, 
+    authorizedAdmin 
+} from "../middlewares/auth.middleware.js";
+import { verifyCsrfToken } from "../middlewares/csrf.middleware.js";
 
 const router = express.Router();
 
-router.post("/register", registerUser )
+
+router.get("/verify-email/:token", 
+    verifyUser
+);
+
+router.post("/login", 
+    loginUser
+);
+
+router.post("/verify-login-otp", 
+    verifyOtp
+);
+
+router.get("/me", 
+    authMiddleware, 
+    myProfile
+);
+
+router.post("/refresh-token", 
+    refreshToken
+);
+
+router.post("/refresh-csrf", 
+    authMiddleware, 
+    refreshCsrfToken
+);
+
+router.post("/logout",
+    authMiddleware, 
+    verifyCsrfToken, 
+    logoutUser
+);
+
+router.post("/", 
+    registerUser
+);
+
+router.get("/admin", 
+    authMiddleware, 
+    authorizedAdmin, 
+    adminController
+);
 
 export default router;

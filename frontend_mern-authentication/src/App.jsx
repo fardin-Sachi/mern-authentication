@@ -1,35 +1,86 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import VerifyOtpPage from "./pages/VerifyOtpPage";
+import { AppData } from "./contexts/AppContext";
+import LoaderComponent from "./components/LoaderComponent";
+import RegisterPage from "./pages/RegisterPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { isAuth, loading, userEmail, isAdmin } = AppData();
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {loading ? (
+        <LoaderComponent />
+      ) : (
+        <BrowserRouter>
+          <Routes>
+
+            <Route
+              path="/"
+              element={
+                isAuth ? <HomePage /> : <Navigate to="/login" />
+              }
+            />
+
+            <Route
+              path="/login"
+              element={
+                !isAuth ? <LoginPage /> : <Navigate to="/" />
+              }
+            />
+
+            <Route
+              path="/register"
+              element={
+                !isAuth ? <RegisterPage /> : <Navigate to="/" />
+              }
+            />
+
+            <Route
+              path="/verify-otp"
+              element={
+                !isAuth && userEmail ? <VerifyOtpPage /> : <Navigate to="/" />
+              }
+            />
+
+            <Route
+              path="/token/:token"
+              element={
+                !isAuth ? <VerifyEmailPage /> : <Navigate to="/" />
+              }
+            />
+
+            <Route
+              path="/dashboard"
+              element={
+                isAuth ? 
+                  isAdmin ? 
+                    <DashboardPage /> 
+                    : 
+                    <Navigate to={"/"} />
+                  : <Navigate to={"/login"} />
+              }
+            />
+            
+          </Routes>
+        </BrowserRouter>
+      )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        newestOnTop={true}
+        pauseOnHover
+        closeOnClick
+      />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

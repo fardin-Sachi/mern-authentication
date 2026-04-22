@@ -12,11 +12,12 @@ services:
       - ./backend_mern-authentication:/app
       - /app/node_modules
     env_file:
-      - ./backend_mern-authentication/.env.local
+      - ./backend_mern-authentication/.env.dev
     environment:
       - NODE_ENV=development
     depends_on:
       - mongo
+      - redis
 
   frontend-dev:
     build: 
@@ -29,7 +30,7 @@ services:
     ports:
       - "5173:5173"
     env_file:
-      - frontend_mern-authentication/.env.local
+      - frontend_mern-authentication/.env.dev
     environment:
       - NODE_ENV=development
     depends_on:
@@ -49,6 +50,9 @@ services:
       - ./backend_mern-authentication/.env.prod
     environment:
       - NODE_ENV=production
+    depends_on:
+      - mongo
+      - redis
 
   frontend-prod:
     build: 
@@ -58,7 +62,7 @@ services:
     ports:
       - "5173:80"
     env_file:
-      - frontend_mern-authentication/.env.local
+      - frontend_mern-authentication/.env.dev
     environment:
       - NODE_ENV=production
     depends_on:
@@ -66,14 +70,25 @@ services:
 
   mongo:
     image: mongo:7.0
-    container_name: mern-mongo
+    container_name: mern-authentication-mongo
     ports:
       - "27017:27017"
     env_file:
-      - ./backend_mern-authentication/.env.local
+      - ./backend_mern-authentication/.env.dev
     volumes:
       - mern-mongo-data:/data/db
     restart: unless-stopped
 
+  redis:
+    image: redis:8.6.1-alpine
+    container_name: mern-authentication-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - mern-redis-data:/data
+    restart: unless-stopped
+
 volumes:
   mern-mongo-data:
+  mern-redis-data:

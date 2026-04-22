@@ -1,0 +1,92 @@
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config/env.config.js";
+import { redisClient } from "../lib/redis.js";
+import User from "../models/user.model.js";
+import { isSessionActive } from '../helpers/generateToken.js';
+
+export const authMiddleware = async (req, res, next) => {
+  try {
+    const token = req.cookies.accessToken;
+    if (!token) {
+      return res.status(403).json({
+        success: false,
+        message: "Please Login - No token provided",
+      });
+    }
+
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+    if (!decodedToken?.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+
+    const sessionActive = await isSessionActive(
+      decodedToken.id, 
+      decodedToken.sessionId
+    );
+    if(!sessionActive) {
+      res.clearCookie("refreshToken");
+      res.clearCookie("accessToken");
+      res.clearCookie("csrfToken");
+
+      return res.status(401).json({
+        success: false,
+        message: "Session Expired. You have been logged in from another device."
+      });
+    }
+
+    const cachedUser = await redisClient.get(`user:${decodedToken.id}`);
+    if (cachedUser) {
+      req.user = JSON.parse(cachedUser);
+      req.sessionId = decodedToken.sessionId;
+      return next();
+    }
+
+    const user = await User.findById(decodedToken.id).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    await redisClient.setEx(`user:${user._id}`, 60 * 60, JSON.stringify(user));
+
+    req.user = user;
+    req.sessionId = decodedToken.sessionId;
+    
+    next();
+  } 
+  catch (error) {
+    if (
+      error.name === "TokenExpiredError" ||
+      error.name === "JsonWebTokenError"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+
+    console.error("Error in authMiddleware:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const authorizedAdmin = async (req, res, next) => {
+  const user = req.user;
+  if(user.role !== 'admin') {
+    return res.status(401).json({
+      success: false,
+      message: "You are not allowed for this activity"
+    })
+  }
+
+  next();
+}
