@@ -41,8 +41,8 @@ function VerifyOtpPage() {
 
                 const userData = await userService.fetchUser();
 
-                setUser(userData);
-                setIsAuth(true);
+                setUser(userData.data.user);
+                setIsAuth(userData.success);
 
                 localStorage.removeItem(`${LOCAL_STORAGE.baseName}:email`);
 

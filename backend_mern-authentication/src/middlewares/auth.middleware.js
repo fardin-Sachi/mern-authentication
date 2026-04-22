@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/env.config.js";
 import { redisClient } from "../lib/redis.js";
 import User from "../models/user.model.js";
+import { isSessionActive } from '../helpers/generateToken.js';
 
 export const authMiddleware = async (req, res, next) => {
   try {
@@ -21,9 +22,25 @@ export const authMiddleware = async (req, res, next) => {
       });
     }
 
+    const sessionActive = await isSessionActive(
+      decodedToken.id, 
+      decodedToken.sessionId
+    );
+    if(!sessionActive) {
+      res.clearCookie("refreshToken");
+      res.clearCookie("accessToken");
+      res.clearCookie("csrfToken");
+
+      return res.status(401).json({
+        success: false,
+        message: "Session Expired. You have been logged in from another device."
+      });
+    }
+
     const cachedUser = await redisClient.get(`user:${decodedToken.id}`);
     if (cachedUser) {
       req.user = JSON.parse(cachedUser);
+      req.sessionId = decodedToken.sessionId;
       return next();
     }
 
@@ -38,8 +55,11 @@ export const authMiddleware = async (req, res, next) => {
     await redisClient.setEx(`user:${user._id}`, 60 * 60, JSON.stringify(user));
 
     req.user = user;
+    req.sessionId = decodedToken.sessionId;
+    
     next();
-  } catch (error) {
+  } 
+  catch (error) {
     if (
       error.name === "TokenExpiredError" ||
       error.name === "JsonWebTokenError"

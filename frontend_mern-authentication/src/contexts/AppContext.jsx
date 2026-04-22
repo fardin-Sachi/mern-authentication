@@ -9,6 +9,7 @@ export const AppProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAuth, setIsAuth] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     /* If a user proceed to OTP verification page while
      *  loggin in, his email is stored in the localStorage.
@@ -24,12 +25,14 @@ export const AppProvider = ({children}) => {
         setLoading(true);
         try {
             const data = await userService.fetchUser();
-            setUser(data);
-            setIsAuth(true);
+            setUser(data.data.user);
+            setIsAuth(data.success);
+            setIsAdmin(data.data.user.role === 'admin');
         } catch (error) {
             console.error(error);
             setUser(null);
             setIsAuth(false);
+            setIsAdmin(false);
         } finally {
             setLoading(false);
         }
@@ -45,6 +48,7 @@ export const AppProvider = ({children}) => {
             toast.error(error?.message || "Logout failed");
         } finally {
             setIsAuth(false);
+            setIsAdmin(false);
             setUser(null);
             
             //In case there is email data
@@ -61,6 +65,8 @@ export const AppProvider = ({children}) => {
             value={{ 
                 setIsAuth, 
                 isAuth, 
+                setIsAdmin, 
+                isAdmin, 
                 setUser, 
                 user, 
                 loading, 

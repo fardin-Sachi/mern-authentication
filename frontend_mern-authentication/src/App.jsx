@@ -11,7 +11,7 @@ import RegisterPage from "./pages/RegisterPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 function App() {
-  const { isAuth, loading, userEmail } = AppData();
+  const { isAuth, loading, userEmail, isAdmin } = AppData();
 
   return (
     <>
@@ -59,7 +59,12 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                isAuth ? <DashboardPage /> : <LoginPage />
+                isAuth ? 
+                  isAdmin ? 
+                    <DashboardPage /> 
+                    : 
+                    <Navigate to={"/"} />
+                  : <Navigate to={"/login"} />
               }
             />
             

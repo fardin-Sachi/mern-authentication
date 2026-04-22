@@ -9,6 +9,7 @@ import sendMail from "../helpers/sendMailer.js";
 import { getOtpHtml, getVerifyEmailHtml } from "../utils/verifyHtml.js";
 import { generateAccessToken, generateToken, revokeRefreshToken, verifyRefreshToken } from "../helpers/generateToken.js";
 import { generateCsrfToken } from "../helpers/generateCsrfToken.js";
+import { success } from 'zod';
 
 export const registerUser = TryCatch(async (req, res) => {
     const sanitizedBody = sanitize(req.body);
@@ -277,15 +278,39 @@ export const verifyOtp = TryCatch(async (req, res) => {
         data: {
             userId: user._id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            sessionInfo: {
+                sessionId: tokenData.sessionId,
+                loginTime: new Date().toISOString(),
+                csrfToken: tokenData.csrfToken
+            }
         }
     });
 })
 
 export const myProfile = TryCatch(async (req, res) => {
     const user = req.user;
+    const sessionId = req.sessionId;
 
-    res.status(200).json(user);
+    const sessionData = await redisClient.get(`session:${sessionId}`);
+    let sessionInfo = null;
+
+    if(sessionData) {
+        const parsedSession = JSON.parse(sessionData);
+        sessionInfo = {
+            sessionId,
+            loginTime: parsedSession.createdAt,
+            lastActivity: parsedSession.lastActivity,
+        };
+    }
+
+    res.status(200).json({
+        success: true,
+        data: {
+            user,
+            sessionInfo
+        }
+    });
 })
 
 export const refreshToken = async (req, res) => {
@@ -300,18 +325,22 @@ export const refreshToken = async (req, res) => {
 
         const decoded = await verifyRefreshToken(refreshToken);
         if (!decoded) {
+            res.clearCookie("refreshToken");
+            res.clearCookie("accessToken");
+            res.clearCookie("csrfToken");
+
             return res.status(401).json({
                 success: false,
-                message: "Invalid refresh token"
+                message: "Session expired. Please log in."
             });
         }
 
-        generateAccessToken(decoded.id, res);
+        generateAccessToken(decoded.id, decoded.sessionId, res);
 
         res.status(200).json({
             success: true,
             message: "Access token refreshed"
-        })
+        });
     } catch (error) {
         console.error("Error in refreshing token:", error);
     }
@@ -328,6 +357,7 @@ export const logoutUser = async (req, res) => {
         res.clearCookie("csrfToken");
 
         await redisClient.del(`user:${userId}`);
+        await redisClient.del(`session:${req.sessionId}`);
 
         res.status(200).json({
             success: true,
